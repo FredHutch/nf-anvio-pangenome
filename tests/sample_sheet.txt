@@ -1,0 +1,6 @@
+tests/genomes/GCF_000005845.2_ASM584v2_genomic.fna.gz
+tests/genomes/GCF_000008865.2_ASM886v2_genomic.fna.gz
+tests/genomes/GCF_000026325.1_ASM2632v1_genomic.fna.gz
+tests/genomes/GCF_000026345.1_ASM2634v1_genomic.fna.gz
+tests/genomes/GCF_000183345.1_ASM18334v1_genomic.fna.gz
+tests/genomes/GCF_000299455.1_ASM29945v1_genomic.fna.gz
