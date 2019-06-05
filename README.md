@@ -75,7 +75,7 @@ docker \
             -p /share/$OUTPUT_NAME-PAN.db
 ```
 
-For more details on how to navigate this visual browser, check out the amazing 
+For more details on how to navigate this visual browser, check out the amazing Anvi'o
 [documentation](http://merenlab.org/2016/11/08/pangenomics-v2/.)
 
 ![Example Data](https://github.com/FredHutch/nf-anvio-pangenome/raw/master/assets/screenshot.png)

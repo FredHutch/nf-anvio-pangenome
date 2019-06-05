@@ -25,7 +25,7 @@ process makeGenomeDB {
     set name, file(fasta) from genome_ch
     
     output:
-    set name, file("*db") into genomeDB_ch
+    set name, file("*db") into genomeDB_ch, nameDB_ch
 
     afterScript "rm -rf *"
 
@@ -79,7 +79,6 @@ process annotateGenes {
     
     output:
     file "${db}" into annotatedDB
-    file "${db}.txt" into layer_txt
 
     afterScript "rm -rf *"
 
@@ -89,9 +88,27 @@ process annotateGenes {
 tar xvf ${anvio_cogs_tar}
 
 anvi-run-ncbi-cogs -c "${db}" --num-threads 4 --cog-data-dir COGS_DIR
+    """
+}
+
+process linkGeneName {
+    container "meren/anvio:5.5"
+    cpus 4
+    memory "8 GB"
+    
+    input:
+    set name, file(db) from nameDB_ch
+    
+    output:
+    file "${db}.txt" into layer_txt
+
+    afterScript "rm -rf *"
+
+    """
+#!/bin/bash
 
 # Link the name to the database
-echo \$name\\t${db} > ${db}.txt
+echo -e ${name},${db} | tr ',' '\\t' > ${db}.txt
     """
 }
 
@@ -106,7 +123,7 @@ process combineGenomes {
     file txt_list from layer_txt.collect()
     
     output:
-    file "${params.output_name}.db" into combinedDB
+    file "${params.output_name}-GENOMES.db" into combinedDB
 
     afterScript "rm -rf *"
 
@@ -117,8 +134,10 @@ echo -e "name\\tcontigs_db_path" > external-genomes.txt
 
 for fp in ${txt_list}; do cat \$fp; done >> external-genomes.txt
 
+cat external-genomes.txt
+
 anvi-gen-genomes-storage -e external-genomes.txt \
-                         -o ${params.output_name}.db
+                         -o ${params.output_name}-GENOMES.db
 
     """
 }
@@ -178,10 +197,10 @@ process addMetadata {
 #!/bin/bash
 
 # Strip out the genome file path
-cat ${sample_sheet} | cut -f 2- > TEMP && mv TEMP ${sample_sheet}
+cat ${sample_sheet} | tr ',' '\\t' | cut -f 2- > TEMP && mv TEMP ${sample_sheet}
 
 anvi-import-misc-data ${sample_sheet} \
-                      -p ${pan_genome} \
+                      -p ${panGenome} \
                       --target-data-table layers
 
     """
