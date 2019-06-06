@@ -1,5 +1,5 @@
 # nf-anvio-pangenome
-Analyze a set of genomes with the anvi'o pangenome pipeline
+Analyze a set of genomes with the [anvi'o](http://merenlab.org/software/anvio/) pangenome pipeline
 
 The motivation here is to wrap up the set of anvi'o functions which would require
 some familiarity of the command line, and isolate those within a reproducible
