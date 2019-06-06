@@ -7,6 +7,14 @@ workflow which can be executed in a single command. The workflow can also take
 advanage of cloud computing in case the number of genomes is larger than your
 computer can easily handle.
 
+### Getting Started
+
+The example below assumes the following:
+
+  * [Docker Desktop](https://www.docker.com/products/docker-desktop) installed on your local computer
+  * [Nextflow configuration file](https://sciwiki.fredhutch.org/compdemos/nextflow/) at `~/nextflow.config`
+
+
 ### Input Data
 
 In order to run this workflow, you need:
@@ -31,11 +39,6 @@ The additional columns to the right will be imported as metadata into the anvi'o
 pangenome viewer.
 
 ### Running the Workflow
-
-The example below assumes the following:
-
-  * Nextflow configuration file at `~/nextflow.config`
-  * Text file with genomes at `sample_sheet.txt`
 
 To run the workflow, make a BASH script containing the following commands:
 
