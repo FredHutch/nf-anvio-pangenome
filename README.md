@@ -12,6 +12,7 @@ computer can easily handle.
 The example below assumes the following:
 
   * [Docker Desktop](https://www.docker.com/products/docker-desktop) installed on your local computer
+  * [Nextflow installed](https://nextflow.io) on your computer
   * [Nextflow configuration file](https://sciwiki.fredhutch.org/compdemos/nextflow/) at `~/nextflow.config`
 
 
