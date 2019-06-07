@@ -25,6 +25,8 @@ In order to run this workflow, you need:
 The text file describing the genomes must be comma-delimited, at a minimum including 
 `genome` and `name` (`genome` must be the first column).
 
+NOTE: `name` must only contain alphanumeric characters (and `_`), and cannot start with a number.
+
 ```
 genome,name,club,hobby
 tests/genomes/GCF_000005845.2_ASM584v2_genomic.fna.gz,ASM584v2,shark,knitting
