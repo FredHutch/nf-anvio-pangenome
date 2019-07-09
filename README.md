@@ -61,9 +61,18 @@ nextflow \
     --sample_sheet sample_sheet.txt \
     --output_directory ./ \
     --output_name EXAMPLE_OUTPUT \
+    --mcl_inflation 10 \
     -resume
 
 ```
+
+### Picking Parameters
+
+You can use the `--mcl_inflation` parameter to control how similar two genes have to be
+for grouping together. The Meren lab recommends using a value of 10 for comparing closely
+related genomes (for example, strains from the same species), and a value of 2 for comparing
+distantly related genomes (for example, across species).
+
 
 ### Visulizing the Pan-Genome
 
