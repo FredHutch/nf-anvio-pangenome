@@ -173,8 +173,7 @@ anvi-pan-genome -g ${combinedDB} \
                 --minbit ${minbit} \
                 --distance ${distance} \
                 --linkage ${linkage} \
-                --mcl-inflation ${mcl_inflation} \
-                --use-ncbi-blast
+                --mcl-inflation ${mcl_inflation}
 
     """
 }
