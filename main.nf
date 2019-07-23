@@ -199,6 +199,12 @@ process addMetadata {
 # Strip out the genome file path
 cat ${sample_sheet} | tr ',' '\\t' | cut -f 2- > TEMP && mv TEMP ${sample_sheet}
 
+echo "Printing the reformatted sample sheet:"
+
+cat ${sample_sheet}
+
+echo ""
+
 anvi-import-misc-data ${sample_sheet} \
                       -p ${panGenome} \
                       --target-data-table layers
