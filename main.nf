@@ -197,7 +197,7 @@ process addMetadata {
 #!/bin/bash
 
 # Strip out the genome file path
-cat ${sample_sheet} | tr ',' '\\t' | cut -f 2- > TEMP && mv TEMP ${sample_sheet}
+cat ${sample_sheet} | tr '\\r' '\\n' | tr ',' '\\t' | cut -f 2- > TEMP && mv TEMP ${sample_sheet}
 
 echo "Printing the reformatted sample sheet:"
 
