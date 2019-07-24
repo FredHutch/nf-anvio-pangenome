@@ -8,7 +8,7 @@ OUTPUT_NAME=EXAMPLE_OUTPUT
 NXF_VER=19.05.0-SNAPSHOT nextflow \
     -C ~/nextflow.config \
     run \
-    main4.nf \
+    main.nf \
     --sample_sheet tests/species_test.csv \
     --output_folder tests/output \
     --mcl_inflation 10 \
