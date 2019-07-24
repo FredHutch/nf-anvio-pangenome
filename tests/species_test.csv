@@ -1,1 +1,11 @@
-genome,name,species/Users/willfrohlich/Desktop/Hutch/G.Vaginalis/tests/genomes/GCA_004336685.1_ASM433668v1_genomic.fna,ATCC_14018,Gardnerella vaginalis/Users/willfrohlich/Desktop/Hutch/G.Vaginalis/tests/genomes/GCA_003397665.1_ASM339766v1_genomic.fna,Ugent_09_07,Gardnerella vaginalis/Users/willfrohlich/Desktop/Hutch/G.Vaginalis/tests/genomes/GCA_003397605.1_ASM339760v1_genomic.fna,Ugent_25_49,Gardnerella vaginalis/Users/willfrohlich/Desktop/Hutch/G.Vaginalis/tests/genomes/GCA_003397755.1_ASM339775v1_genomic.fna,Ugent_09_01,Gardnerella vaginalis/Users/willfrohlich/Desktop/Hutch/G.Vaginalis/tests/genomes/GCA_003293675.1_ASM329367v1_genomic.fna,UGent_06_41,Gardnerella leopoldii/Users/willfrohlich/Desktop/Hutch/G.Vaginalis/tests/genomes/GCA_003397635.1_ASM339763v1_genomic.fna,Ugent_09_48,Gardnerella leopoldii/Users/willfrohlich/Desktop/Hutch/G.Vaginalis/tests/genomes/GCA_003397585.1_ASM339758v1_genomic.fna,Ugent_18_01,Gardnerella piotii/Users/willfrohlich/Desktop/Hutch/G.Vaginalis/tests/genomes/GCA_003397615.1_ASM339761v1_genomic.fna,Ugent_21_28,Gardnerella piotii/Users/willfrohlich/Desktop/Hutch/G.Vaginalis/tests/genomes/GCA_003397705.1_ASM339770v1_genomic.fna,GS_9838_1,Gardnerella swidsinskii/Users/willfrohlich/Desktop/Hutch/G.Vaginalis/tests/genomes/GCA_003397745.1_ASM339774v1_genomic.fna,GS_10234,Gardnerella swidsinskii
+genome,name,species
+/tests/genomes/GCA_004336685.1_ASM433668v1_genomic.fna,ATCC_14018,Gardnerella vaginalis
+/tests/genomes/GCA_003397665.1_ASM339766v1_genomic.fna,Ugent_09_07,Gardnerella vaginalis
+/tests/genomes/GCA_003397605.1_ASM339760v1_genomic.fna,Ugent_25_49,Gardnerella vaginalis
+/tests/genomes/GCA_003397755.1_ASM339775v1_genomic.fna,Ugent_09_01,Gardnerella vaginalis
+/tests/genomes/GCA_003293675.1_ASM329367v1_genomic.fna,UGent_06_41,Gardnerella leopoldii
+/tests/genomes/GCA_003397635.1_ASM339763v1_genomic.fna,Ugent_09_48,Gardnerella leopoldii
+/tests/genomes/GCA_003397585.1_ASM339758v1_genomic.fna,Ugent_18_01,Gardnerella piotii
+/tests/genomes/GCA_003397615.1_ASM339761v1_genomic.fna,Ugent_21_28,Gardnerella piotii
+/tests/genomes/GCA_003397705.1_ASM339770v1_genomic.fna,GS_9838_1,Gardnerella swidsinskii
+/tests/genomes/GCA_003397745.1_ASM339774v1_genomic.fna,GS_10234,Gardnerella swidsinskii
