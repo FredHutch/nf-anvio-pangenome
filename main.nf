@@ -31,12 +31,9 @@ process makeGenomeDB {
 
     """
 #!/bin/bash
-
 fasta=${fasta}
-
 # Decompress the FASTA if it is compressed
 gzip -t \$fasta && gunzip \$fasta && fasta=\$(echo \$fasta | sed 's/.gz//')
-
 # The file ending must be "fa" or "fasta"
 if [[ \$fasta =~ ".fa" ]] || [[ \$fasta =~ ".fasta" ]]; then
     pass
@@ -44,7 +41,6 @@ else
     mv \$fasta \$fasta.fasta
     fasta=\$fasta.fasta
 fi
-
 anvi-script-FASTA-to-contigs-db \$fasta
     """
 }
@@ -61,9 +57,7 @@ process setupNCBIcogs {
 
     """
 #!/bin/bash
-
 anvi-setup-ncbi-cogs --num-threads 4 --cog-data-dir COGS_DIR --just-do-it
-
 tar cvf COGS_DIR.tar COGS_DIR
     """
 }
@@ -84,9 +78,7 @@ process annotateGenes {
 
     """
 #!/bin/bash
-
 tar xvf ${anvio_cogs_tar}
-
 anvi-run-ncbi-cogs -c "${db}" --num-threads 4 --cog-data-dir COGS_DIR
     """
 }
@@ -106,7 +98,6 @@ process linkGeneName {
 
     """
 #!/bin/bash
-
 # Link the name to the database
 echo -e ${name},${db} | tr ',' '\\t' > ${db}.txt
     """
@@ -129,16 +120,11 @@ process combineGenomes {
 
     """
 #!/bin/bash
-
 echo -e "name\\tcontigs_db_path" > external-genomes.txt
-
 for fp in ${txt_list}; do cat \$fp; done >> external-genomes.txt
-
 cat external-genomes.txt
-
 anvi-gen-genomes-storage -e external-genomes.txt \
                          -o ${params.output_name}-GENOMES.db
-
     """
 }
 
@@ -157,13 +143,12 @@ process panGenomeAnalysis {
     val mcl_inflation from params.mcl_inflation
     
     output:
-    file "${params.output_name}-PAN.db" into panGenome
+    file "${params.output_name}-PAN.db" into panGenome_for_addMetadata
 
     afterScript "rm -rf *"
 
     """
 #!/bin/bash
-
 anvi-pan-genome -g ${combinedDB} \
                 --project-name ${output_name} \
                 --output-dir ./ \
@@ -174,7 +159,6 @@ anvi-pan-genome -g ${combinedDB} \
                 --distance ${distance} \
                 --linkage ${linkage} \
                 --mcl-inflation ${mcl_inflation}
-
     """
 }
 
@@ -185,30 +169,57 @@ process addMetadata {
     publishDir "${params.output_folder}"
     
     input:
-    file panGenome
+    file panGenome from panGenome_for_addMetadata
+    file combinedDB
     file sample_sheet from file("${params.sample_sheet}")
     
     output:
-    file "${panGenome}"
+    file "${panGenome}" into panGenome_for_enrichFunctions
+
 
     afterScript "rm -rf *"
 
     """
 #!/bin/bash
-
 # Strip out the genome file path
 cat ${sample_sheet} | tr '\\r' '\\n' | tr ',' '\\t' | cut -f 2- > TEMP && mv TEMP ${sample_sheet}
-
 echo "Printing the reformatted sample sheet:"
-
 cat ${sample_sheet}
-
 echo ""
-
 anvi-import-misc-data ${sample_sheet} \
                       -p ${panGenome} \
                       --target-data-table layers
-
     """
 }
 
+if ( params.category_name ){
+    process enrichFunctions{
+        container "meren/anvio:5.5"
+        cpus 1
+        memory "2 GB"
+        publishDir "${params.output_folder}"
+        
+        input:
+        file panGenome from panGenome_for_enrichFunctions
+        file combinedDB
+        val output_name from params.output_name
+        val category_name from params.category_name
+        
+        output:
+        file "${output_name}-enriched-functions-species.txt"
+        file "${output_name}-functions-occurrence.txt"
+
+
+        afterScript "rm -rf *"
+
+        """
+    #!/bin/bash
+    anvi-get-enriched-functions-per-pan-group -p ${panGenome} \
+                                              -g ${combinedDB} \
+                                              --category ${category_name} \
+                                              --annotation-source COG_FUNCTION \
+                                              -o "${output_name}-enriched-functions-${category_name}.txt" \
+                                              --functional-occurrence-table-output "${output_name}-functions-occurrence.txt"
+        """
+    }
+}
