@@ -25,7 +25,7 @@ process makeGenomeDB {
     set name, file(fasta) from genome_ch
     
     output:
-    set name, file("*db") into genomeDB_ch, nameDB_ch
+    set name, file("*db") into genomeDB_ch, nameDB_ch, aniDB_ch
 
     afterScript "rm -rf *"
 
@@ -92,7 +92,7 @@ process linkGeneName {
     set name, file(db) from nameDB_ch
     
     output:
-    file "${db}.txt" into layer_txt
+    file "${db}.txt" into layer_txt_for_combineGenomes
 
     afterScript "rm -rf *"
 
@@ -111,10 +111,11 @@ process combineGenomes {
     
     input:
     file db_list from annotatedDB.collect()
-    file txt_list from layer_txt.collect()
+    file txt_list from layer_txt_for_combineGenomes.collect()
     
     output:
     file "${params.output_name}-GENOMES.db" into combinedDB
+    file "external-genomes.txt" into external_genomes_for_ani
 
     afterScript "rm -rf *"
 
@@ -130,7 +131,7 @@ anvi-gen-genomes-storage -e external-genomes.txt \
 
 process panGenomeAnalysis {
     container "meren/anvio:5.5"
-    cpus 4
+    cpus 5
     memory "8 GB"
     
     input:
@@ -164,7 +165,7 @@ anvi-pan-genome -g ${combinedDB} \
 
 process addMetadata {
     container "meren/anvio:5.5"
-    cpus 1
+    cpus 4
     memory "2 GB"
     publishDir "${params.output_folder}"
     
@@ -174,7 +175,7 @@ process addMetadata {
     file sample_sheet from file("${params.sample_sheet}")
     
     output:
-    file "${panGenome}" into panGenome_for_enrichFunctions
+    file "${panGenome}" into panGenome_for_enrichFunctions, panGenome_for_ani
 
 
     afterScript "rm -rf *"
@@ -195,7 +196,7 @@ anvi-import-misc-data ${sample_sheet} \
 if ( params.category_name ){
     process enrichFunctions{
         container "meren/anvio:5.5"
-        cpus 1
+        cpus 4
         memory "2 GB"
         publishDir "${params.output_folder}"
         
@@ -222,4 +223,32 @@ if ( params.category_name ){
                                               --functional-occurrence-table-output "${output_name}-functions-occurrence.txt"
         """
     }
+}
+
+process computeANI {
+    container "meren/anvio:5.5"
+    cpus 4
+    memory "16 GB"
+    publishDir "${params.output_folder}"
+    
+    input:
+    file panGenome from panGenome_for_ani
+    val output_name from params.output_name
+    file combinedDB
+    file genome_db_list from aniDB_ch.collect()
+    file externalGenomes from external_genomes_for_ani
+    
+    afterScript "rm -rf *"
+
+    output:
+    file "${panGenome}"
+
+    """
+#!/bin/bash
+    
+    anvi-compute-ani --external-genomes ${externalGenomes} \
+                 --output-dir ANI \
+                 --num-threads 4 \
+                 --pan-db ${panGenome}
+    """
 }
