@@ -2,7 +2,8 @@
 
 set -e
 # Change "EXAMPLE_OUTPUT" to something that describes this group of genomes
-OUTPUT_NAME=EXAMPLE_OUTPUT
+OUTPUT_NAME=GARDNERELLA_SPECIES
+
 
 
 NXF_VER=19.05.0-SNAPSHOT nextflow \
@@ -11,8 +12,9 @@ NXF_VER=19.05.0-SNAPSHOT nextflow \
     main.nf \
     --sample_sheet tests/species_test.csv \
     --output_folder tests/output \
-    --mcl_inflation 10 \
+    --mcl_inflation 8 \
     --output_name $OUTPUT_NAME \
+    --min_alignment_fraction 0 \
     --category_name species \
     -work-dir s3://fh-pi-fredricks-d/lab/Sam_Minot/data/nextflow/work/ \
     --list-collections \

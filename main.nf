@@ -224,31 +224,32 @@ if ( params.category_name ){
         """
     }
 }
+    process computeANI {
+        container "meren/anvio:5.5"
+        cpus 4
+        memory "16 GB"
+        publishDir "${params.output_folder}"
+        
+        input:
+        file panGenome from panGenome_for_ani
+        val output_name from params.output_name
+        val min_alignment_fraction from params.min_alignment_fraction
+        file combinedDB
+        file genome_db_list from aniDB_ch.collect()
+        file externalGenomes from external_genomes_for_ani
+        
+        afterScript "rm -rf *"
 
-process computeANI {
-    container "meren/anvio:5.5"
-    cpus 4
-    memory "16 GB"
-    publishDir "${params.output_folder}"
-    
-    input:
-    file panGenome from panGenome_for_ani
-    val output_name from params.output_name
-    file combinedDB
-    file genome_db_list from aniDB_ch.collect()
-    file externalGenomes from external_genomes_for_ani
-    
-    afterScript "rm -rf *"
+        output:
+        file "${panGenome}"
 
-    output:
-    file "${panGenome}"
-
-    """
-#!/bin/bash
-    
-    anvi-compute-ani --external-genomes ${externalGenomes} \
-                 --output-dir ANI \
-                 --num-threads 4 \
-                 --pan-db ${panGenome}
-    """
-}
+        """
+    #!/bin/bash
+        
+        anvi-compute-ani --external-genomes ${externalGenomes} \
+                     --min-alignment-fraction ${min_alignment_fraction} \
+                     --output-dir ANI \
+                     --num-threads 4 \
+                     --pan-db ${panGenome}
+        """
+    }
