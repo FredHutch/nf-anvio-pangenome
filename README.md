@@ -70,6 +70,7 @@ nextflow \
     --sample_sheet species_test.csv \
     --output_folder ./ \
     --output_name $OUTPUT_NAME \
+    --min_alignment_fraction 0 \
     --category_name species \
     --mcl_inflation 10 \
     -work-dir #insert your work dir
@@ -87,7 +88,15 @@ distantly related genomes (for example, across species).
 
 You can use the `--category_name` parameter to select which column of metadata you want 
 to use to identify groups within your genomes and find functions that are enriched in those 
-groups: functions that are characteristic of these genomes, and predominantly absent from genomes from outside this group. This data will be available in your output folder and be titled YOUR_PANGENOME-enriched-functions-category.txt
+groups: functions that are characteristic of these genomes, and predominantly absent from 
+genomes from outside this group. This data will be available in your output folder and be 
+titled YOUR_PANGENOME-enriched-functions-category.txt
+
+You can use the `--min_allignment_fraction` parameter to eliminate ANI scores between two 
+genomes if the alignment fraction is less than you deem trustable. When you set a value, anvi'o 
+will go through the ANI results, and set percent identity scores between two genomes to 0 if
+alignment fraction *between either of them* is less than the parameter described here. The default
+is 0.0, so every hit is reported, but you can choose any value between 0.0 and 1.0. 
 
 
 ### Visulizing the Pan-Genome
