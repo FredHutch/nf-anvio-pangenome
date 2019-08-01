@@ -27,15 +27,21 @@ The text file describing the genomes must be comma-delimited, at a minimum inclu
 `genome` and `name` (`genome` must be the first column).
 
 NOTE: `name` must only contain alphanumeric characters (and `_`), and cannot start with a number.
+            `genome` must be the complete path to the file not only `tests/genomes`. For example my
+            file path is  `/Users/willfrohlich/Desktop/Hutch/G.Vaginalis/tests/genomes/`.
 
 ```
-genome,name,club,hobby
-tests/genomes/GCF_000005845.2_ASM584v2_genomic.fna.gz,ASM584v2,shark,knitting
-tests/genomes/GCF_000008865.2_ASM886v2_genomic.fna.gz,ASM886v2,shark,crochet
-tests/genomes/GCF_000026325.1_ASM2632v1_genomic.fna.gz,ASM2632v1,shark,crochet
-tests/genomes/GCF_000026345.1_ASM2634v1_genomic.fna.gz,ASM2634v1,jet,crochet
-tests/genomes/GCF_000183345.1_ASM18334v1_genomic.fna.gz,ASM18334v1,jet,knitting
-tests/genomes/GCF_000299455.1_ASM29945v1_genomic.fna.gz,ASM29945v1,jet,knitting
+genome,name,species
+tests/genomes/GCA_004336685.1_ASM433668v1_genomic.fna,ATCC_14018,Gardnerella vaginalis
+tests/genomes/GCA_003397665.1_ASM339766v1_genomic.fna,Ugent_09_07,Gardnerella vaginalis
+tests/genomes/GCA_003397605.1_ASM339760v1_genomic.fna,Ugent_25_49,Gardnerella vaginalis
+tests/genomes/GCA_003397755.1_ASM339775v1_genomic.fna,Ugent_09_01,Gardnerella vaginalis
+tests/genomes/GCA_003293675.1_ASM329367v1_genomic.fna,UGent_06_41,Gardnerella leopoldii
+tests/genomes/GCA_003397635.1_ASM339763v1_genomic.fna,Ugent_09_48,Gardnerella leopoldii
+tests/genomes/GCA_003397585.1_ASM339758v1_genomic.fna,Ugent_18_01,Gardnerella piotii
+tests/genomes/GCA_003397615.1_ASM339761v1_genomic.fna,Ugent_21_28,Gardnerella piotii
+tests/genomes/GCA_003397705.1_ASM339770v1_genomic.fna,GS_9838_1,Gardnerella swidsinskii
+tests/genomes/GCA_003397745.1_ASM339774v1_genomic.fna,GS_10234,Gardnerella swidsinskii
 ```
 
 The additional columns to the right will be imported as metadata into the anvi'o 
@@ -50,6 +56,9 @@ To run the workflow, make a BASH script containing the following commands:
 
 set -e
 
+# Change "EXAMPLE_OUTPUT" to something that describes this group of genomes
+OUTPUT_NAME=EXAMPLE_OUTPUT
+
 # Get the most recent version of the workflow
 nextflow pull fredhutch/nf-anvio-pangenome
 
@@ -58,10 +67,14 @@ nextflow \
     -C ~/nextflow.config \
     run \
     fredhutch/nf-anvio-pangenome \
-    --sample_sheet sample_sheet.txt \
-    --output_directory ./ \
-    --output_name EXAMPLE_OUTPUT \
+    --sample_sheet species_test.csv \
+    --output_folder ./ \
+    --output_name $OUTPUT_NAME \
+    --min_alignment_fraction 0 \
+    --category_name species \
     --mcl_inflation 10 \
+    -work-dir #insert your work dir
+    -process.queue mixed \
     -resume
 
 ```
@@ -72,6 +85,18 @@ You can use the `--mcl_inflation` parameter to control how similar two genes hav
 for grouping together. The Meren lab recommends using a value of 10 for comparing closely
 related genomes (for example, strains from the same species), and a value of 2 for comparing
 distantly related genomes (for example, across species).
+
+You can use the `--category_name` parameter to select which column of metadata you want 
+to use to identify groups within your genomes and find functions that are enriched in those 
+groups: functions that are characteristic of these genomes, and predominantly absent from 
+genomes from outside this group. This data will be available in your output folder and be 
+titled YOUR_PANGENOME-enriched-functions-category.txt
+
+You can use the `--min_allignment_fraction` parameter to eliminate ANI scores between two 
+genomes if the alignment fraction is less than you deem trustable. When you set a value, anvi'o 
+will go through the ANI results, and set percent identity scores between two genomes to 0 if
+alignment fraction *between either of them* is less than the parameter described here. The default
+is 0.0, so every hit is reported, but you can choose any value between 0.0 and 1.0. 
 
 
 ### Visulizing the Pan-Genome
@@ -86,8 +111,8 @@ docker \
     -v $PWD:/share \
         meren/anvio:5.5 \
             anvi-display-pan \
-            -g /share/$OUTPUT_NAME-GENOMES.db \
-            -p /share/$OUTPUT_NAME-PAN.db
+            -g /share/tests/output/$OUTPUT_NAME-GENOMES.db \
+            -p /share/tests/output/$OUTPUT_NAME-PAN.db
 ```
 
 For more details on how to navigate this visual browser, check out the amazing Anvi'o
