@@ -115,7 +115,9 @@ docker \
             -p /share/tests/output/$OUTPUT_NAME-PAN.db
 ```
 
-For more details on how to navigate this visual browser, check out the amazing Anvi'o
+For more details on how to setup and navigate this visual browser, check out this [presentation](https://figshare.com/articles/Fred_Hutch_Nextflow_Anvi_o_Pangenome_Pipeline_Bacterial_Vaginosis/9273533)
+
+Or, check out the amazing Anvi'o
 [documentation](http://merenlab.org/2016/11/08/pangenomics-v2/.)
 
 ![Example Data](https://github.com/FredHutch/nf-anvio-pangenome/raw/master/assets/screenshot.png)
