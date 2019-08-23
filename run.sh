@@ -21,6 +21,8 @@ NXF_VER=19.05.0-SNAPSHOT nextflow \
     -process.queue mixed \
     -resume
 
+echo "Your genomes have been processed, and now the interactive anvi'o viewer is starting up. If this is the first time you have run this command, it may take ~5 minutes to download the anvi'o Docker image. Please wait..."
+
 docker \
     run \
     -p 127.0.0.1:80:8080/tcp \
