@@ -16,7 +16,7 @@ NXF_VER=19.05.0-SNAPSHOT nextflow \
     --output_name $OUTPUT_NAME \
     --min_alignment_fraction 0 \
     --category_name species \
-    -work-dir s3://fh-pi-fredricks-d/lab/Sam_Minot/data/nextflow/work/ \
+    -work-dir <INSERT WORK DIRECTORY> \
     --list-collections \
     -process.queue mixed \
     -resume
