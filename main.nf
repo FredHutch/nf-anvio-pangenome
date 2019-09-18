@@ -207,7 +207,7 @@ if ( params.category_name ){
         val category_name from params.category_name
         
         output:
-        file "${output_name}-enriched-functions-species.txt"
+        file "${output_name}-enriched-functions-${category_name}.txt"
         file "${output_name}-functions-occurrence.txt"
 
 
