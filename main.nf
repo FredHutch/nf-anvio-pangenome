@@ -1,12 +1,5 @@
 #!/usr/bin/env nextflow
 
-// Read in the file listing the genomes to analyze
-Channel
-    .fromPath(params.sample_sheet)
-    .splitCsv(header:true)
-    .map { row -> tuple(row.name, file(row.genome)) }
-    .set { genome_ch }
-
 params.output_name = "COMBINED_GENOMES"
 params.output_folder = "./"
 
@@ -16,13 +9,39 @@ params.distance = "euclidean"
 params.linkage = "ward"
 params.mcl_inflation = "2"
 
+process parseSampleSheet {
+    container "quay.io/fhcrc-microbiome/python-pandas:v0.24.2"
+    cpus 1
+    memory "2 GB"
+    
+    input:
+    file sample_sheet_csv from file(params.sample_sheet)
+    
+    output:
+    file "${sample_sheet_csv}" into sample_sheet_ch
+
+    afterScript "rm -rf *"
+
+    """
+#!/usr/bin/env python3
+import pandas as pd
+
+df = pd.read_csv("${sample_sheet_csv}", sep=",")
+
+for k in ["name", "genome"]:
+    assert k in df.columns.values, "Must provide a column '%s' in the sample sheet" % k
+
+df.to_csv("${sample_sheet_csv}", index=None, sep=",")
+    """
+}
+
 process makeGenomeDB {
     container "meren/anvio:5.5"
     cpus 4
     memory "8 GB"
     
     input:
-    set name, file(fasta) from genome_ch
+    set name, file(fasta) from sample_sheet_ch.splitCsv(header:true).map { row -> tuple(row.name, file(row.genome)) }
     
     output:
     set name, file("*db") into genomeDB_ch, nameDB_ch, aniDB_ch
