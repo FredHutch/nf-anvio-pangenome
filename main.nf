@@ -31,6 +31,9 @@ df = pd.read_csv("${sample_sheet_csv}", sep=",")
 for k in ["name", "genome"]:
     assert k in df.columns.values, "Must provide a column '%s' in the sample sheet" % k
 
+# Strip away all whitespace and carriage returns
+df = df.apply(str).applymap(lambda s: s.strip())
+
 df.to_csv("${sample_sheet_csv}", index=None, sep=",")
     """
 }
