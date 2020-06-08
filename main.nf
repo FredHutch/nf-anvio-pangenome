@@ -43,7 +43,7 @@ print("Done")
 }
 
 process makeGenomeDB {
-    container "quay.io/fhcrc-microbiome/anvio:6.2"
+    container "quay.io/fhcrc-microbiome/anvio:6.2.1"
     label "mem_medium"
     
     input:
@@ -69,7 +69,7 @@ anvi-script-FASTA-to-contigs-db \$fasta
 }
 
 process setupNCBIcogs {
-    container "quay.io/fhcrc-microbiome/anvio:6.2"
+    container "quay.io/fhcrc-microbiome/anvio:6.2.1"
     label "mem_medium"
     
     output:
@@ -83,7 +83,7 @@ tar cvf COGS_DIR.tar COGS_DIR
 }
 
 process annotateGenes {
-    container "quay.io/fhcrc-microbiome/anvio:6.2"
+    container "quay.io/fhcrc-microbiome/anvio:6.2.1"
     label "mem_medium"
     
     input:
@@ -101,7 +101,7 @@ anvi-run-ncbi-cogs -c "${db}" --num-threads 4 --cog-data-dir COGS_DIR
 }
 
 process linkGeneName {
-    container "quay.io/fhcrc-microbiome/anvio:6.2"
+    container "quay.io/fhcrc-microbiome/anvio:6.2.1"
     label "mem_medium"
     
     input:
@@ -118,7 +118,7 @@ echo -e ${name},${db} | tr ',' '\\t' > ${db}.txt
 }
 
 process combineGenomes {
-    container "quay.io/fhcrc-microbiome/anvio:6.2"
+    container "quay.io/fhcrc-microbiome/anvio:6.2.1"
     label "mem_medium"
     publishDir "${params.output_folder}"
     
@@ -141,7 +141,7 @@ anvi-gen-genomes-storage -e external-genomes.txt \
 }
 
 process panGenomeAnalysis {
-    container "quay.io/fhcrc-microbiome/anvio:6.2"
+    container "quay.io/fhcrc-microbiome/anvio:6.2.1"
     label "mem_medium"
     
     input:
@@ -172,7 +172,7 @@ anvi-pan-genome -g ${combinedDB} \
 }
 
 process addMetadata {
-    container "quay.io/fhcrc-microbiome/anvio:6.2"
+    container "quay.io/fhcrc-microbiome/anvio:6.2.1"
     label "io_limited"
     publishDir "${params.output_folder}"
     
@@ -208,7 +208,7 @@ fi
 
 if ( params.category_name ){
     process enrichFunctions{
-        container "quay.io/fhcrc-microbiome/anvio:6.2"
+        container "quay.io/fhcrc-microbiome/anvio:6.2.1"
         label "io_limited"
         publishDir "${params.output_folder}"
         
@@ -234,7 +234,7 @@ if ( params.category_name ){
     }
 }
     process computeANI {
-        container "quay.io/fhcrc-microbiome/anvio:6.2"
+        container "quay.io/fhcrc-microbiome/anvio:6.2.1"
         label "mem_veryhigh"
         publishDir "${params.output_folder}"
         
