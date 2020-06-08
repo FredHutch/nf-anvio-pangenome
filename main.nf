@@ -8,7 +8,6 @@ params.minbit = "0.5"
 params.distance = "euclidean"
 params.linkage = "ward"
 params.mcl_inflation = "2"
-params.category_name = false
 
 process parseSampleSheet {
     container "quay.io/fhcrc-microbiome/python-pandas:v0.24.2"
@@ -19,7 +18,7 @@ process parseSampleSheet {
     file sample_sheet_csv from file(params.sample_sheet)
     
     output:
-    file "${sample_sheet_csv}" into sample_sheet_ch, sample_sheet_to_parse
+    file "${sample_sheet_csv}" into sample_sheet_ch
 
     afterScript "rm -rf *"
 
@@ -33,9 +32,9 @@ for k in ["name", "genome"]:
     assert k in df.columns.values, "Must provide a column '%s' in the sample sheet" % k
 
 # Strip away all whitespace and carriage returns
-df = df.applymap(str).applymap(lambda s: s.strip())
+df = df.apply(str).applymap(lambda s: s.strip())
 
-df.to_csv("${sample_sheet_csv}", index=None, sep="\\t")
+df.to_csv("${sample_sheet_csv}", index=None, sep=",")
     """
 }
 
@@ -45,7 +44,7 @@ process makeGenomeDB {
     memory "8 GB"
     
     input:
-    set name, file(fasta) from sample_sheet_ch.splitCsv(header:true, sep:"\t").map { row -> tuple(row.name, file(row.genome)) }
+    set name, file(fasta) from sample_sheet_ch.splitCsv(header:true).map { row -> tuple(row.name, file(row.genome)) }
     
     output:
     set name, file("*db") into genomeDB_ch, nameDB_ch, aniDB_ch
@@ -195,7 +194,7 @@ process addMetadata {
     input:
     file panGenome from panGenome_for_addMetadata
     file combinedDB
-    file sample_sheet from sample_sheet_to_parse
+    file sample_sheet from file("${params.sample_sheet}")
     
     output:
     file "${panGenome}" into panGenome_for_enrichFunctions, panGenome_for_ani
@@ -205,23 +204,14 @@ process addMetadata {
 
     """
 #!/bin/bash
-
 # Strip out the genome file path
-cat ${sample_sheet} | cut -f 2- > TEMP && mv TEMP ${sample_sheet}
+cat ${sample_sheet} | tr '\\r' '\\n' | tr ',' '\\t' | cut -f 2- > TEMP && mv TEMP ${sample_sheet}
 echo "Printing the reformatted sample sheet:"
 cat ${sample_sheet}
-
-if (( \$(head -1 ${sample_sheet} | tr "\\t" "\\n" | wc -l ) > 1 )); then
-    echo ""
-    echo "Adding metadata"
-    anvi-import-misc-data ${sample_sheet} \
-                          -p ${panGenome} \
-                          --target-data-table layers
-else
-    echo ""
-    echo "Not adding any metadata, none provided"
-
-fi
+echo ""
+anvi-import-misc-data ${sample_sheet} \
+                      -p ${panGenome} \
+                      --target-data-table layers
     """
 }
 
