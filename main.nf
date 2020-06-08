@@ -251,11 +251,14 @@ if ( params.category_name ){
 
         """
     #!/bin/bash
+
+    set -e
         
-        anvi-compute-ani --external-genomes ${externalGenomes} \
-                     --min-alignment-fraction ${min_alignment_fraction} \
-                     --output-dir ANI \
-                     --num-threads 4 \
-                     --pan-db ${panGenome}
+    anvi-compute-genome-similarity \
+        --external-genomes ${externalGenomes} \
+        --min-alignment-fraction ${min_alignment_fraction} \
+        --output-dir ANI \
+        --num-threads 4 \
+        --pan-db ${panGenome}
         """
     }
