@@ -21,8 +21,6 @@ process parseSampleSheet {
     output:
     file "${sample_sheet_csv}" into sample_sheet_ch, sample_sheet_to_parse
 
-    afterScript "rm -rf *"
-
     """#!/usr/bin/env python3
 import pandas as pd
 
@@ -54,8 +52,6 @@ process makeGenomeDB {
     output:
     set name, file("*db") into genomeDB_ch, nameDB_ch, aniDB_ch
 
-    afterScript "rm -rf *"
-
     """
 #!/bin/bash
 fasta=${fasta}
@@ -79,8 +75,6 @@ process setupNCBIcogs {
     output:
     file "COGS_DIR.tar" into anvio_cogs_tar
 
-    afterScript "rm -rf *"
-
     """
 #!/bin/bash
 anvi-setup-ncbi-cogs --num-threads 4 --cog-data-dir COGS_DIR --just-do-it
@@ -99,8 +93,6 @@ process annotateGenes {
     output:
     file "${db}" into annotatedDB
 
-    afterScript "rm -rf *"
-
     """
 #!/bin/bash
 tar xvf ${anvio_cogs_tar}
@@ -117,8 +109,6 @@ process linkGeneName {
     
     output:
     file "${db}.txt" into layer_txt_for_combineGenomes
-
-    afterScript "rm -rf *"
 
     """
 #!/bin/bash
@@ -139,8 +129,6 @@ process combineGenomes {
     output:
     file "${params.output_name}-GENOMES.db" into combinedDB
     file "external-genomes.txt" into external_genomes_for_ani
-
-    afterScript "rm -rf *"
 
     """
 #!/bin/bash
@@ -167,8 +155,6 @@ process panGenomeAnalysis {
     
     output:
     file "${params.output_name}-PAN.db" into panGenome_for_addMetadata
-
-    afterScript "rm -rf *"
 
     """
 #!/bin/bash
@@ -197,9 +183,6 @@ process addMetadata {
     
     output:
     file "${panGenome}" into panGenome_for_enrichFunctions, panGenome_for_ani
-
-
-    afterScript "rm -rf *"
 
     """
 #!/bin/bash
@@ -239,9 +222,6 @@ if ( params.category_name ){
         file "${output_name}-enriched-functions-${category_name}.txt"
         file "${output_name}-functions-occurrence.txt"
 
-
-        afterScript "rm -rf *"
-
         """
     #!/bin/bash
     anvi-get-enriched-functions-per-pan-group -p ${panGenome} \
@@ -266,8 +246,6 @@ if ( params.category_name ){
         file genome_db_list from aniDB_ch.collect()
         file externalGenomes from external_genomes_for_ani
         
-        afterScript "rm -rf *"
-
         output:
         file "${panGenome}"
 
