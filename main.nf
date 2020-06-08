@@ -23,11 +23,14 @@ process parseSampleSheet {
 
     afterScript "rm -rf *"
 
-    """
-#!/usr/bin/env python3
+    """#!/usr/bin/env python3
 import pandas as pd
 
+print("Reading in ${sample_sheet_csv}")
+
 df = pd.read_csv("${sample_sheet_csv}", sep=",")
+
+print("Read in %d rows and %d columns" % (df.shape[0], df.shape[1]))
 
 for k in ["name", "genome"]:
     assert k in df.columns.values, "Must provide a column '%s' in the sample sheet" % k
@@ -35,7 +38,9 @@ for k in ["name", "genome"]:
 # Strip away all whitespace and carriage returns
 df = df.applymap(str).applymap(lambda s: s.strip())
 
+print("Writing out sanitized sample sheet")
 df.to_csv("${sample_sheet_csv}", index=None, sep="\\t")
+print("Done")
     """
 }
 
