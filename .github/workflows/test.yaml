@@ -1,0 +1,26 @@
+name: Anvio Pangenome CI
+
+on: [push, pull_request]  
+
+jobs:
+
+  workflow:
+    runs-on: ubuntu-latest
+    env:
+      NXF_ANSI_LOG: 0
+    steps:
+      - uses: actions/checkout@v1
+      - name: Install Nextflow
+        run: |
+          wget -qO- get.nextflow.io | bash
+          sudo mv nextflow /usr/local/bin/
+      - name: Free disk space
+        run: |
+          sudo swapoff -a
+          sudo rm -f /swapfile
+          sudo apt clean
+          docker rmi $(docker image ls -aq)
+          df -h
+      - name:  Run workflow
+        run: |
+          NXF_VER=20.01.0 nextflow run main.nf -c nextflow.config -profile testing --manifest data/mock.manifest.csv --output output --hg_index data/hg_chr_21_bwa_index.tar.gz --formula "label1 + label2" --distance_threshold 0.5 -w work/ --eggnog_db false --eggnog_dmnd false --taxonomic_dmnd false -with-docker ubuntu:latest
