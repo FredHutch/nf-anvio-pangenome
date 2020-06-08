@@ -12,8 +12,7 @@ params.category_name = false
 
 process parseSampleSheet {
     container "quay.io/fhcrc-microbiome/python-pandas:v0.24.2"
-    cpus 1
-    memory "2 GB"
+    label "io_limited"
     
     input:
     file sample_sheet_csv from file(params.sample_sheet)
@@ -41,8 +40,7 @@ df.to_csv("${sample_sheet_csv}", index=None, sep="\\t")
 
 process makeGenomeDB {
     container "meren/anvio:6.2"
-    cpus 4
-    memory "8 GB"
+    label "mem_medium"
     
     input:
     set name, file(fasta) from sample_sheet_ch.splitCsv(header:true, sep:"\t").map { row -> tuple(row.name, file(row.genome)) }
@@ -70,8 +68,7 @@ anvi-script-FASTA-to-contigs-db \$fasta
 
 process setupNCBIcogs {
     container "meren/anvio:6.2"
-    cpus 4
-    memory "8 GB"
+    label "mem_medium"
     
     output:
     file "COGS_DIR.tar" into anvio_cogs_tar
@@ -87,8 +84,7 @@ tar cvf COGS_DIR.tar COGS_DIR
 
 process annotateGenes {
     container "meren/anvio:6.2"
-    cpus 4
-    memory "8 GB"
+    label "mem_medium"
     
     input:
     set name, file(db) from genomeDB_ch
@@ -108,8 +104,7 @@ anvi-run-ncbi-cogs -c "${db}" --num-threads 4 --cog-data-dir COGS_DIR
 
 process linkGeneName {
     container "meren/anvio:6.2"
-    cpus 4
-    memory "8 GB"
+    label "mem_medium"
     
     input:
     set name, file(db) from nameDB_ch
@@ -128,8 +123,7 @@ echo -e ${name},${db} | tr ',' '\\t' > ${db}.txt
 
 process combineGenomes {
     container "meren/anvio:6.2"
-    cpus 4
-    memory "8 GB"
+    label "mem_medium"
     publishDir "${params.output_folder}"
     
     input:
@@ -154,8 +148,7 @@ anvi-gen-genomes-storage -e external-genomes.txt \
 
 process panGenomeAnalysis {
     container "meren/anvio:6.2"
-    cpus 5
-    memory "8 GB"
+    label "mem_medium"
     
     input:
     file combinedDB
@@ -188,8 +181,7 @@ anvi-pan-genome -g ${combinedDB} \
 
 process addMetadata {
     container "meren/anvio:6.2"
-    cpus 4
-    memory "2 GB"
+    label "io_limited"
     publishDir "${params.output_folder}"
     
     input:
@@ -228,8 +220,7 @@ fi
 if ( params.category_name ){
     process enrichFunctions{
         container "meren/anvio:6.2"
-        cpus 4
-        memory "2 GB"
+        label "io_limited"
         publishDir "${params.output_folder}"
         
         input:
@@ -258,8 +249,7 @@ if ( params.category_name ){
 }
     process computeANI {
         container "meren/anvio:6.2"
-        cpus 4
-        memory "16 GB"
+        label "mem_veryhigh"
         publishDir "${params.output_folder}"
         
         input:
