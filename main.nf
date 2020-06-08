@@ -39,7 +39,7 @@ df.to_csv("${sample_sheet_csv}", index=None, sep=",")
 }
 
 process makeGenomeDB {
-    container "meren/anvio:5.5"
+    container "meren/anvio:6.2"
     cpus 4
     memory "8 GB"
     
@@ -68,7 +68,7 @@ anvi-script-FASTA-to-contigs-db \$fasta
 }
 
 process setupNCBIcogs {
-    container "meren/anvio:5.5"
+    container "meren/anvio:6.2"
     cpus 4
     memory "8 GB"
     
@@ -85,7 +85,7 @@ tar cvf COGS_DIR.tar COGS_DIR
 }
 
 process annotateGenes {
-    container "meren/anvio:5.5"
+    container "meren/anvio:6.2"
     cpus 4
     memory "8 GB"
     
@@ -106,7 +106,7 @@ anvi-run-ncbi-cogs -c "${db}" --num-threads 4 --cog-data-dir COGS_DIR
 }
 
 process linkGeneName {
-    container "meren/anvio:5.5"
+    container "meren/anvio:6.2"
     cpus 4
     memory "8 GB"
     
@@ -126,7 +126,7 @@ echo -e ${name},${db} | tr ',' '\\t' > ${db}.txt
 }
 
 process combineGenomes {
-    container "meren/anvio:5.5"
+    container "meren/anvio:6.2"
     cpus 4
     memory "8 GB"
     publishDir "${params.output_folder}"
@@ -152,7 +152,7 @@ anvi-gen-genomes-storage -e external-genomes.txt \
 }
 
 process panGenomeAnalysis {
-    container "meren/anvio:5.5"
+    container "meren/anvio:6.2"
     cpus 5
     memory "8 GB"
     
@@ -186,7 +186,7 @@ anvi-pan-genome -g ${combinedDB} \
 }
 
 process addMetadata {
-    container "meren/anvio:5.5"
+    container "meren/anvio:6.2"
     cpus 4
     memory "2 GB"
     publishDir "${params.output_folder}"
@@ -217,7 +217,7 @@ anvi-import-misc-data ${sample_sheet} \
 
 if ( params.category_name ){
     process enrichFunctions{
-        container "meren/anvio:5.5"
+        container "meren/anvio:6.2"
         cpus 4
         memory "2 GB"
         publishDir "${params.output_folder}"
@@ -247,7 +247,7 @@ if ( params.category_name ){
     }
 }
     process computeANI {
-        container "meren/anvio:5.5"
+        container "meren/anvio:6.2"
         cpus 4
         memory "16 GB"
         publishDir "${params.output_folder}"
