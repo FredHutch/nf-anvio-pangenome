@@ -77,7 +77,7 @@ process setupNCBIcogs {
 
     """
 #!/bin/bash
-anvi-setup-ncbi-cogs --num-threads 4 --cog-data-dir COGS_DIR --just-do-it
+anvi-setup-ncbi-cogs --num-threads 4 --cog-data-dir COGS_DIR --just-do-it --reset
 tar cvf COGS_DIR.tar COGS_DIR
     """
 }
