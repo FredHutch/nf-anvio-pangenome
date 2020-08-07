@@ -63,8 +63,9 @@ OUTPUT_NAME=EXAMPLE_OUTPUT
 nextflow pull fredhutch/nf-anvio-pangenome
 
 # Run the workflow
+NXF_VER=20.04.1 \
 nextflow \
-    -C ~/nextflow.config \
+    -c ~/nextflow.config \
     run \
     fredhutch/nf-anvio-pangenome \
     --sample_sheet species_test.csv \
