@@ -4,10 +4,8 @@ set -e
 # Change "EXAMPLE_OUTPUT" to something that describes this group of genomes
 OUTPUT_NAME=EXAMPLE_OUTPUT
 
-
-
-NXF_VER=19.05.0-SNAPSHOT nextflow \
-    -C ~/nextflow.config \
+NXF_VER=20.04.1 nextflow \
+    -c ~/nextflow.config \
     run \
     main.nf \
     --sample_sheet tests/species_test.csv \
