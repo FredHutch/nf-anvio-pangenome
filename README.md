@@ -93,7 +93,7 @@ groups: functions that are characteristic of these genomes, and predominantly ab
 genomes from outside this group. This data will be available in your output folder and be 
 titled YOUR_PANGENOME-enriched-functions-category.txt
 
-You can use the `--min_allignment_fraction` parameter to eliminate ANI scores between two 
+You can use the `--min_alignment_fraction` parameter to eliminate ANI scores between two 
 genomes if the alignment fraction is less than you deem trustable. When you set a value, anvi'o 
 will go through the ANI results, and set percent identity scores between two genomes to 0 if
 alignment fraction *between either of them* is less than the parameter described here. The default
