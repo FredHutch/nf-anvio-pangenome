@@ -222,15 +222,28 @@ if ( params.category_name ){
         file "${output_name}-enriched-functions-${category_name}.txt"
         file "${output_name}-functions-occurrence.txt"
 
-        """
-    #!/bin/bash
-    anvi-get-enriched-functions-per-pan-group -p ${panGenome} \
-                                              -g ${combinedDB} \
-                                              --category ${category_name} \
-                                              --annotation-source COG_FUNCTION \
-                                              -o "${output_name}-enriched-functions-${category_name}.txt" \
-                                              --functional-occurrence-table-output "${output_name}-functions-occurrence.txt"
-        """
+        script:
+
+        if (params.gene_enrichment == false)
+            """#!/bin/bash
+            anvi-get-enriched-functions-per-pan-group -p ${panGenome} \
+                                                    -g ${combinedDB} \
+                                                    --category ${category_name} \
+                                                    --annotation-source COG_FUNCTION \
+                                                    -o "${output_name}-enriched-functions-${category_name}.txt" \
+                                                    --functional-occurrence-table-output "${output_name}-functions-occurrence.txt"
+            """
+
+        else
+            """#!/bin/bash
+            anvi-get-enriched-functions-per-pan-group -p ${panGenome} \
+                                                    -g ${combinedDB} \
+                                                    --category ${category_name} \
+                                                    --annotation-source IDENTITY \
+                                                    --include-gc-identity-as-function \
+                                                    -o "${output_name}-enriched-functions-${category_name}.txt" \
+                                                    --functional-occurrence-table-output "${output_name}-functions-occurrence.txt"
+            """
     }
 }
     process computeANI {
