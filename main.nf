@@ -154,7 +154,7 @@ process panGenomeAnalysis {
     val mcl_inflation from params.mcl_inflation
     
     output:
-    file "${params.output_name}-PAN.db" into panGenome_for_addMetadata
+    file "${params.output_name}-PAN.db" into panGenome_for_addMetadata, panGenome_for_getSeqs
 
     """
 #!/bin/bash
@@ -171,6 +171,40 @@ anvi-pan-genome -g ${combinedDB} \
     """
 }
 
+process getSequencesForGCs {
+    container "quay.io/fhcrc-microbiome/anvio:6.2.1"
+    label "mem_veryhigh"
+    publishDir "${params.output_folder}"
+    
+    input:
+    file panGenome from panGenome_for_getSeqs
+    file combinedDB
+    val output_name from params.output_name
+    
+    output:
+    file "${output_name}.gene_clusters.fastp"
+    file "${output_name}.gene_clusters.fasta"
+
+    """
+#!/bin/bash
+
+set -e
+    
+anvi-get-sequences-for-gene-clusters \
+    -p ${panGenome} \
+    -g ${combinedDB} \
+    -o ${output_name}.gene_clusters.fastp \
+    --just-do-it
+
+anvi-get-sequences-for-gene-clusters \
+    -p ${panGenome} \
+    -g ${combinedDB} \
+    -o ${output_name}.gene_clusters.fasta \
+    --report-DNA-sequences \
+    --just-do-it
+    """
+}
+    
 process addMetadata {
     container "quay.io/fhcrc-microbiome/anvio:6.2.1"
     label "io_limited"
