@@ -9,6 +9,7 @@ params.distance = "euclidean"
 params.linkage = "ward"
 params.mcl_inflation = "2"
 params.category_name = false
+params.gene_enrichment = false
 params.min_alignment_fraction = 0
 
 process parseSampleSheet {
