@@ -251,7 +251,7 @@ if ( params.category_name ){
         file panGenome from panGenome_for_enrichFunctions
         file combinedDB
         val output_name from params.output_name
-        val category_name from params.category_name
+        val category_name from Channel.of(params.category_name.split(","))
         
         output:
         file "${output_name}-enriched-functions-${category_name}.txt"

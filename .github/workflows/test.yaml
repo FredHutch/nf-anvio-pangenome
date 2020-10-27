@@ -24,3 +24,6 @@ jobs:
       - name:  Run workflow
         run: |
           NXF_VER=20.01.0 nextflow run main.nf -c nextflow.config -profile testing -w work/ -with-docker ubuntu:latest --sample_sheet tests/species_test.csv --category_name species
+      - name:  Run workflow with multiple categories
+        run: |
+          NXF_VER=20.01.0 nextflow run main.nf -c nextflow.config -profile testing -w work/ -with-docker ubuntu:latest --sample_sheet tests/species_test.csv --category_name species,species
