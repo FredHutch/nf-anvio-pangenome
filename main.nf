@@ -296,6 +296,7 @@ if ( params.category_name ){
         
         output:
         file "${panGenome}"
+        file "ANI/*"
 
         """
     #!/bin/bash
