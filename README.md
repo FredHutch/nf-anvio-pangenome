@@ -87,19 +87,23 @@ for grouping together. The Meren lab recommends using a value of 10 for comparin
 related genomes (for example, strains from the same species), and a value of 2 for comparing
 distantly related genomes (for example, across species).
 
-You can use the `--category_name` parameter to select which column of metadata you want 
-to use to identify groups within your genomes and find functions that are enriched in those 
-groups: functions that are characteristic of these genomes, and predominantly absent from 
-genomes from outside this group. This data will be available in your output folder and be 
+You can use the `--category_name` parameter to select which column of metadata you want
+to use to identify groups within your genomes and find functions that are enriched in those
+groups: functions that are characteristic of these genomes, and predominantly absent from
+genomes from outside this group. This data will be available in your output folder and be
 titled YOUR_PANGENOME-enriched-functions-category.txt
 
-You can use the `--min_alignment_fraction` parameter to eliminate ANI scores between two 
-genomes if the alignment fraction is less than you deem trustable. When you set a value, anvi'o 
+You can use the `--min_alignment_fraction` parameter to eliminate ANI scores between two
+genomes if the alignment fraction is less than you deem trustable. When you set a value, anvi'o
 will go through the ANI results, and set percent identity scores between two genomes to 0 if
 alignment fraction *between either of them* is less than the parameter described here. The default
-is 0.0, so every hit is reported, but you can choose any value between 0.0 and 1.0. 
+is 0.0, so every hit is reported, but you can choose any value between 0.0 and 1.0.
 
-
+You can use the `--ani_program` parameter to select which program is used to compute
+the average nucleotide identity (ANI), a pairwise measure of similarity between genomes.
+The default is `pyANI` (which is more precise, but slower). Other supported options are
+`fastANI` and `sourmash`. The anvi'o documentation related to this parameter can be found
+[here](https://merenlab.org/software/anvio/vignette/#anvi-compute-genome-similarity).
 ### Visulizing the Pan-Genome
 
 To launch the visual browser for the pan-genome, run the following command 
@@ -110,7 +114,7 @@ docker \
     run \
     -p 127.0.0.1:80:8080/tcp \
     -v $PWD:/share \
-        meren/anvio:5.5 \
+        meren/anvio:7 \
             anvi-display-pan \
             -g /share/tests/output/$OUTPUT_NAME-GENOMES.db \
             -p /share/tests/output/$OUTPUT_NAME-PAN.db

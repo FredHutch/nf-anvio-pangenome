@@ -11,6 +11,7 @@ params.mcl_inflation = "2"
 params.category_name = false
 params.gene_enrichment = false
 params.min_alignment_fraction = 0
+params.ani_program = "pyANI"
 
 anvio_container = "quay.io/fhcrc-microbiome/anvio:7"
 
@@ -310,6 +311,8 @@ if ( params.category_name ){
         --min-alignment-fraction ${min_alignment_fraction} \
         --output-dir ANI \
         --num-threads 4 \
-        --pan-db ${panGenome}
+        --pan-db ${panGenome} \
+        --program ${params.ani_program} \
+        -T ${task.cpus}
         """
     }
