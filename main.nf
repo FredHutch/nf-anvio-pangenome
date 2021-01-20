@@ -61,8 +61,8 @@ process makeGenomeDB {
 fasta=${fasta}
 # Decompress the FASTA if it is compressed
 gzip -t \$fasta && gunzip \$fasta && fasta=\$(echo \$fasta | sed 's/.gz//')
-# The file ending must be "fa" or "fasta"
-if [[ \$fasta =~ ".fa" ]] || [[ \$fasta =~ ".fasta" ]]; then
+# The file ending must be "fa", "fsa", or "fasta"
+if [[ \$fasta =~ ".fa" ]] || [[ \$fasta =~ ".fsa" ]] || [[ \$fasta =~ ".fasta" ]]; then
     pass
 else
     mv \$fasta \$fasta.fasta
