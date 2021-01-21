@@ -54,7 +54,7 @@ process makeGenomeDB {
     set name, file(fasta) from sample_sheet_ch.splitCsv(header:true, sep:"\t").map { row -> tuple(row.name, file(row.genome)) }
     
     output:
-    set name, file("*db") into genomeDB_ch, nameDB_ch, aniDB_ch
+    set name, file("${name}.db") into genomeDB_ch, nameDB_ch, aniDB_ch
 
     """
 #!/bin/bash
@@ -73,7 +73,7 @@ fi
 anvi-script-reformat-fasta --simplify-names -l 0 -o \$fasta.clean.fasta \$fasta
 
 # Make the genome database
-anvi-gen-contigs-database -f \$fasta.clean.fasta
+anvi-gen-contigs-database -f \$fasta.clean.fasta -n ${name} -o ${name}.db
     """
 }
 
