@@ -70,7 +70,7 @@ else
 fi
 
 # Reformat the FASTA to sanitize deflines
-anvi-script-reformat-fasta -o \$fasta.clean.fasta \$fasta
+anvi-script-reformat-fasta --simplify-names -l 0 -o \$fasta.clean.fasta \$fasta
 
 # Make the genome database
 anvi-gen-contigs-database -f \$fasta.clean.fasta
