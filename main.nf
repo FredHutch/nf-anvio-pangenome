@@ -68,7 +68,8 @@ else
     mv \$fasta \$fasta.fasta
     fasta=\$fasta.fasta
 fi
-anvi-script-FASTA-to-contigs-db \$fasta
+
+anvi-gen-contigs-database -f \$fasta
     """
 }
 
