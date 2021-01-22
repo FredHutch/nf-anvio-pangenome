@@ -269,23 +269,23 @@ if ( params.category_name ){
 
         if (params.gene_enrichment == false)
             """#!/bin/bash
-            anvi-get-enriched-functions-per-pan-group -p ${panGenome} \
-                                                    -g ${combinedDB} \
-                                                    --category ${category_name} \
-                                                    --annotation-source COG_FUNCTION \
-                                                    -o "${output_name}-enriched-functions-${category_name}.txt" \
-                                                    --functional-occurrence-table-output "${output_name}-functions-occurrence.txt"
-            """
+            anvi-compute-functional-enrichment -p ${panGenome} \
+                                                -g ${combinedDB} \
+                                                --category-variable ${category_name} \
+                                                --annotation-source COG_FUNCTION \
+                                                -o "${output_name}-enriched-functions-${category_name}.txt" \
+                                                --functional-occurrence-table-output "${output_name}-functions-occurrence.txt"
+        """
 
         else
             """#!/bin/bash
-            anvi-get-enriched-functions-per-pan-group -p ${panGenome} \
-                                                    -g ${combinedDB} \
-                                                    --category ${category_name} \
-                                                    --annotation-source IDENTITY \
-                                                    --include-gc-identity-as-function \
-                                                    -o "${output_name}-enriched-functions-${category_name}.txt" \
-                                                    --functional-occurrence-table-output "${output_name}-functions-occurrence.txt"
+            anvi-compute-functional-enrichment -p ${panGenome} \
+                                                -g ${combinedDB} \
+                                                --category-variable ${category_name} \
+                                                --annotation-source IDENTITY \
+                                                --include-gc-identity-as-function \
+                                                -o "${output_name}-enriched-functions-${category_name}.txt" \
+                                                --functional-occurrence-table-output "${output_name}-functions-occurrence.txt"
             """
     }
 }
