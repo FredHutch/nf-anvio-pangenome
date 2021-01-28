@@ -272,7 +272,7 @@ if ( params.category_name ){
             anvi-compute-functional-enrichment -p ${panGenome} \
                                                 -g ${combinedDB} \
                                                 --category-variable ${category_name} \
-                                                --annotation-source COG_FUNCTION \
+                                                --annotation-source COG20_FUNCTION \
                                                 -o "${output_name}-enriched-functions-${category_name}.txt" \
                                                 --functional-occurrence-table-output "${output_name}-functions-occurrence.txt"
         """
