@@ -252,7 +252,7 @@ fi
 if ( params.category_name ){
     process enrichFunctions{
         container "${anvio_container}"
-        label "io_limited"
+        label "mem_medium"
         publishDir "${params.output_folder}"
         
         input:
