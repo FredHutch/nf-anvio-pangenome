@@ -86,8 +86,18 @@ process setupNCBIcogs {
 
     """
 #!/bin/bash
+
+# Stop if any errors occur below
+set -Eeuo pipefail
+
+# Run the anvio command to setup the NCBI COGs database locally
 anvi-setup-ncbi-cogs --num-threads 4 --cog-data-dir COGS_DIR --just-do-it --reset
+
+# Combine all of the downloaded files into a single tarball
 tar cvf COGS_DIR.tar COGS_DIR
+
+# Clean up the temporary directory
+rm -r COGS_DIR
     """
 }
 
@@ -321,3 +331,58 @@ if ( params.category_name ){
         -T ${task.cpus}
         """
     }
+
+process setupKOfams {
+    container "${anvio_container}"
+    label "io_limited"
+    
+    output:
+    file "KEGG_KO_DIR.tar" into anvio_kofam_tar
+
+    """
+#!/bin/bash
+
+# Stop if any errors occur below
+set -Eeuo pipefail
+
+# Run the anvio command to setup the NCBI KEGG KO database locally
+anvi-setup-kegg-kofams --kegg-data-dir KEGG_KO_DIR --just-do-it --reset
+
+# Combine all of the downloaded files into a single tarball
+tar cvf KEGG_KO_DIR.tar KEGG_KO_DIR
+
+# Clean up the temporary directory
+rm -r KEGG_KO_DIR
+    """
+}
+
+process annotateKOfams {
+    container "${anvio_container}"
+    label "mem_medium"
+    publishDir "${params.output_folder}/kegg_kofams/"
+    
+    input:
+    file combinedDB
+    file anvio_kofam_tar
+    
+    output:
+    file "${combinedDB}"
+
+    """
+#!/bin/bash
+
+# Stop if any errors occur below
+set -Eeuo pipefail
+
+# Unpack the directory with reference data for KEGG KO fams
+# this will create a directory named KEGG_KO_DIR
+tar xvf ${anvio_kofam_tar}
+
+# Run the anvi'o function to annotate KEGG KO fams
+anvi-run-kegg-kofams \
+    -c "${combinedDB}" \
+    --num-threads ${task.cpus} \
+    --cog-data-dir KEGG_KO_DIR
+
+    """
+}
