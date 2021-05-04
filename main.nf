@@ -170,7 +170,7 @@ process panGenomeAnalysis {
 anvi-pan-genome -g ${combinedDB} \
                 --project-name ${output_name} \
                 --output-dir ./ \
-                --num-threads 4 \
+                --num-threads ${task.cpus} \
                 --use-ncbi-blast \
                 --min-occurrence ${min_occurrence} \
                 --minbit ${minbit} \
