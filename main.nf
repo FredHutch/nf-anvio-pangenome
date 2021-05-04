@@ -79,21 +79,21 @@ anvi-gen-contigs-database -f \$fasta.clean.fasta -n ${name} -o ${name}.db
 
 process setupNCBIcogs {
     container "${anvio_container}"
-    label "mem_medium"
+    label "cpu_high"
     
     output:
     file "COGS_DIR.tar" into anvio_cogs_tar
 
     """
 #!/bin/bash
-anvi-setup-ncbi-cogs --num-threads 4 --cog-data-dir COGS_DIR --just-do-it --reset
+anvi-setup-ncbi-cogs --num-threads ${task.cpus} --cog-data-dir COGS_DIR --just-do-it --reset
 tar cvf COGS_DIR.tar COGS_DIR
     """
 }
 
 process annotateGenes {
     container "${anvio_container}"
-    label "mem_medium"
+    label "cpu_high"
     
     input:
     set name, file(db) from genomeDB_ch
@@ -105,7 +105,7 @@ process annotateGenes {
     """
 #!/bin/bash
 tar xvf ${anvio_cogs_tar}
-anvi-run-ncbi-cogs -c "${db}" --num-threads 4 --cog-data-dir COGS_DIR
+anvi-run-ncbi-cogs -c "${db}" --num-threads ${task.cpus} --cog-data-dir COGS_DIR
     """
 }
 
@@ -182,7 +182,7 @@ anvi-pan-genome -g ${combinedDB} \
 
 process getSequencesForGCs {
     container "${anvio_container}"
-    label "mem_veryhigh"
+    label "io_limited"
     publishDir "${params.output_folder}"
     
     input:
@@ -291,7 +291,7 @@ if ( params.category_name ){
 }
     process computeANI {
         container "${anvio_container}"
-        label "mem_veryhigh"
+        label "cpu_high"
         publishDir "${params.output_folder}"
         
         input:
@@ -315,7 +315,7 @@ if ( params.category_name ){
         --external-genomes ${externalGenomes} \
         --min-alignment-fraction ${min_alignment_fraction} \
         --output-dir ANI \
-        --num-threads 4 \
+        --num-threads ${task.cpus} \
         --pan-db ${panGenome} \
         --program ${params.ani_program} \
         -T ${task.cpus}
