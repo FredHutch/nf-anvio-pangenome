@@ -151,7 +151,7 @@ anvi-gen-genomes-storage -e external-genomes.txt \
 
 process panGenomeAnalysis {
     container "${anvio_container}"
-    label "mem_medium"
+    label "cpu_high"
     
     input:
     file combinedDB
