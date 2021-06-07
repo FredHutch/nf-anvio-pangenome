@@ -182,7 +182,7 @@ anvi-pan-genome -g ${combinedDB} \
 
 process getSequencesForGCs {
     container "${anvio_container}"
-    label "io_limited"
+    label "mem_medium"
     publishDir "${params.output_folder}"
     
     input:
