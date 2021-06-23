@@ -104,7 +104,35 @@ the average nucleotide identity (ANI), a pairwise measure of similarity between 
 The default is `pyANI` (which is more precise, but slower). Other supported options are
 `fastANI` and `sourmash`. The anvi'o documentation related to this parameter can be found
 [here](https://merenlab.org/software/anvio/vignette/#anvi-compute-genome-similarity).
-### Visulizing the Pan-Genome
+
+You can use the `--minbit` parameter to adjust the stringency of clustering for groups
+of amino acid sequences. The [anvi'o documentation](https://merenlab.org/2016/11/08/pangenomics-v2/)
+describes this with:
+
+```
+The minbit score between two sequences goes to 1.0 if they are very similar over the entire
+length of the shorter amino acid sequence, and goes to 0.0 if
+
+    (1) they match over a very short stretch compared even to the length of the shorter amino acid sequence, or
+    
+    (2) the match between sequence identity is low.
+    
+The default minbit is 0.5, but you can change it using the parameter --minbit.
+```
+
+You can use the `--min_occurrence` parameter to adjust the threshold used to filter
+out which genes are used in the analysis. The value of this parameter determines the
+number of genomes in which a particular gene cluster must be found within for that
+gene cluster to be included in the downstream analysis. Default: 1.
+
+You can use the `--distance` parameter to set the distance metric used for clustering.
+Default: euclidean.
+
+You can use the `--linkage` parameter to set the linkage method used for clustering.
+Default: ward.
+
+
+### Visualizing the Pan-Genome
 
 To launch the visual browser for the pan-genome, run the following command 
 (replacing the database files and folder as appropriate):
