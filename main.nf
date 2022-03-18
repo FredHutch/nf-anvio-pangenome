@@ -129,7 +129,7 @@ echo -e ${name},${db} | tr ',' '\\t' > ${db}.txt
 process combineGenomes {
     container "${anvio_container}"
     label "mem_medium"
-    publishDir "${params.output_folder}"
+    publishDir "${params.output_folder}", mode: "copy", overwrite: true
     
     input:
     file db_list from annotatedDB.collect()
@@ -183,7 +183,7 @@ anvi-pan-genome -g ${combinedDB} \
 process getSequencesForGCs {
     container "${anvio_container}"
     label "mem_medium"
-    publishDir "${params.output_folder}"
+    publishDir "${params.output_folder}", mode: "copy", overwrite: true
     
     input:
     file panGenome from panGenome_for_getSeqs
@@ -217,7 +217,7 @@ anvi-get-sequences-for-gene-clusters \
 process addMetadata {
     container "${anvio_container}"
     label "io_limited"
-    publishDir "${params.output_folder}"
+    publishDir "${params.output_folder}", mode: "copy", overwrite: true
     
     input:
     file panGenome from panGenome_for_addMetadata
@@ -253,7 +253,7 @@ if ( params.category_name ){
     process enrichFunctions{
         container "${anvio_container}"
         label "mem_medium"
-        publishDir "${params.output_folder}"
+        publishDir "${params.output_folder}", mode: "copy", overwrite: true
         
         input:
         file panGenome from panGenome_for_enrichFunctions
@@ -292,7 +292,7 @@ if ( params.category_name ){
     process computeANI {
         container "${anvio_container}"
         label "cpu_high"
-        publishDir "${params.output_folder}"
+        publishDir "${params.output_folder}", mode: "copy", overwrite: true
         
         input:
         file panGenome from panGenome_for_ani
