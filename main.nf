@@ -63,7 +63,7 @@ fasta=${fasta}
 gzip -t \$fasta && gunzip \$fasta && fasta=\$(echo \$fasta | sed 's/.gz//')
 # The file ending must be "fa", "fsa", or "fasta"
 if [[ \$fasta =~ ".fa" ]] || [[ \$fasta =~ ".fsa" ]] || [[ \$fasta =~ ".fasta" ]]; then
-    pass
+    echo "No need to rename \$fasta"
 else
     mv \$fasta \$fasta.fasta
     fasta=\$fasta.fasta
