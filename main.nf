@@ -1,20 +1,5 @@
 #!/usr/bin/env nextflow
 
-params.output_name = "COMBINED_GENOMES"
-params.output_folder = "./"
-
-params.min_occurrence = "1"
-params.minbit = "0.5"
-params.distance = "euclidean"
-params.linkage = "ward"
-params.mcl_inflation = "2"
-params.category_name = false
-params.gene_enrichment = false
-params.min_alignment_fraction = 0
-params.ani_program = "pyANI"
-
-anvio_container = "quay.io/fhcrc-microbiome/anvio:7"
-
 process parseSampleSheet {
     container "quay.io/fhcrc-microbiome/python-pandas:v0.24.2"
     label "io_limited"
@@ -47,7 +32,7 @@ print("Done")
 }
 
 process makeGenomeDB {
-    container "${anvio_container}"
+    container "${params.container__anvio}"
     label "mem_medium"
     
     input:
@@ -78,7 +63,7 @@ anvi-gen-contigs-database -f \$fasta.clean.fasta -n ${name} -o ${name}.db
 }
 
 process setupNCBIcogs {
-    container "${anvio_container}"
+    container "${params.container__anvio}"
     label "cpu_high"
     
     output:
@@ -92,7 +77,7 @@ tar cvf COGS_DIR.tar COGS_DIR
 }
 
 process annotateGenes {
-    container "${anvio_container}"
+    container "${params.container__anvio}"
     label "cpu_high"
     
     input:
@@ -110,7 +95,7 @@ anvi-run-ncbi-cogs -c "${db}" --num-threads ${task.cpus} --cog-data-dir COGS_DIR
 }
 
 process linkGeneName {
-    container "${anvio_container}"
+    container "${params.container__anvio}"
     label "mem_medium"
     
     input:
@@ -127,7 +112,7 @@ echo -e ${name},${db} | tr ',' '\\t' > ${db}.txt
 }
 
 process combineGenomes {
-    container "${anvio_container}"
+    container "${params.container__anvio}"
     label "mem_medium"
     publishDir "${params.output_folder}", mode: "copy", overwrite: true
     
@@ -150,7 +135,7 @@ anvi-gen-genomes-storage -e external-genomes.txt \
 }
 
 process panGenomeAnalysis {
-    container "${anvio_container}"
+    container "${params.container__anvio}"
     label "cpu_high"
     
     input:
@@ -181,7 +166,7 @@ anvi-pan-genome -g ${combinedDB} \
 }
 
 process getSequencesForGCs {
-    container "${anvio_container}"
+    container "${params.container__anvio}"
     label "mem_medium"
     publishDir "${params.output_folder}", mode: "copy", overwrite: true
     
@@ -215,7 +200,7 @@ anvi-get-sequences-for-gene-clusters \
 }
     
 process addMetadata {
-    container "${anvio_container}"
+    container "${params.container__anvio}"
     label "io_limited"
     publishDir "${params.output_folder}", mode: "copy", overwrite: true
     
@@ -251,7 +236,7 @@ fi
 
 if ( params.category_name ){
     process enrichFunctions{
-        container "${anvio_container}"
+        container "${params.container__anvio}"
         label "mem_medium"
         publishDir "${params.output_folder}", mode: "copy", overwrite: true
         
@@ -290,7 +275,7 @@ if ( params.category_name ){
     }
 }
     process computeANI {
-        container "${anvio_container}"
+        container "${params.container__anvio}"
         label "cpu_high"
         publishDir "${params.output_folder}", mode: "copy", overwrite: true
         
