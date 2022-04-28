@@ -41,8 +41,9 @@ process makeGenomeDB {
     output:
     set name, file("${name}.db") into genomeDB_ch, nameDB_ch, aniDB_ch
 
-    """
-#!/bin/bash
+    """#!/bin/bash
+set -e
+
 fasta=${fasta}
 # Decompress the FASTA if it is compressed
 gzip -t \$fasta && gunzip \$fasta && fasta=\$(echo \$fasta | sed 's/.gz//')
@@ -69,8 +70,9 @@ process setupNCBIcogs {
     output:
     file "COGS_DIR.tar" into anvio_cogs_tar
 
-    """
-#!/bin/bash
+    """#!/bin/bash
+set -e
+
 anvi-setup-ncbi-cogs --num-threads ${task.cpus} --cog-data-dir COGS_DIR --just-do-it --reset
 tar cvf COGS_DIR.tar COGS_DIR
     """
@@ -87,8 +89,9 @@ process annotateGenes {
     output:
     file "${db}" into annotatedDB
 
-    """
-#!/bin/bash
+    """#!/bin/bash
+set -e
+
 tar xvf ${anvio_cogs_tar}
 anvi-run-ncbi-cogs -c "${db}" --num-threads ${task.cpus} --cog-data-dir COGS_DIR
     """
@@ -104,8 +107,9 @@ process linkGeneName {
     output:
     file "${db}.txt" into layer_txt_for_combineGenomes
 
-    """
-#!/bin/bash
+    """#!/bin/bash
+set -e
+
 # Link the name to the database
 echo -e ${name},${db} | tr ',' '\\t' > ${db}.txt
     """
@@ -124,8 +128,9 @@ process combineGenomes {
     file "${params.output_name}-GENOMES.db" into combinedDB
     file "external-genomes.txt" into external_genomes_for_ani
 
-    """
-#!/bin/bash
+    """#!/bin/bash
+set -e
+
 echo -e "name\\tcontigs_db_path" > external-genomes.txt
 for fp in ${txt_list}; do cat \$fp; done >> external-genomes.txt
 cat external-genomes.txt
@@ -150,8 +155,9 @@ process panGenomeAnalysis {
     output:
     file "${params.output_name}-PAN.db" into panGenome_for_addMetadata, panGenome_for_getSeqs
 
-    """
-#!/bin/bash
+    """#!/bin/bash
+set -e
+
 anvi-pan-genome -g ${combinedDB} \
                 --project-name ${output_name} \
                 --output-dir ./ \
@@ -179,8 +185,9 @@ process getSequencesForGCs {
     file "${output_name}.gene_clusters.fastp"
     file "${output_name}.gene_clusters.fasta"
 
-    """
-#!/bin/bash
+    """#!/bin/bash
+set -e
+
 
 set -e
     
@@ -212,8 +219,9 @@ process addMetadata {
     output:
     file "${panGenome}" into panGenome_for_enrichFunctions, panGenome_for_ani
 
-    """
-#!/bin/bash
+    """#!/bin/bash
+set -e
+
 
 # Strip out the genome file path
 cat ${sample_sheet} | cut -f 2- > TEMP && mv TEMP ${sample_sheet}
