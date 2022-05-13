@@ -2,6 +2,11 @@
     "name": "Anvi'o Pan-Genome Analysis",
     "description": "Pan-Genome Analysis using the Anvi'o software library",
     "args": {
+        "sample_sheet": {
+            "help": "Text file describing the genomes to be analyzed with the columns `genome` and `name` (`genome` must be the first column)",
+            "wb_type": "file",
+            "required": true
+        },
         "output_name": {
             "help": "Prefix to use for all output files",
             "wb_type": "string",
