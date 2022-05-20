@@ -64,6 +64,11 @@
             "default": 5,
             "wb_env": "MAX_RETRIES"
         },
+        "cogs_tar": {
+            "help": "Previously downloaded COG database (*.tar) (optional)",
+            "wb_type": "file",
+            "default": "false"
+        },
         "nxf_profile": {
             "help": "Profile used for resource allocation (standard or testing)",
             "wb_env": "PROFILE",

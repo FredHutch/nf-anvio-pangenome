@@ -63,20 +63,29 @@ anvi-gen-contigs-database -f \$fasta.clean.fasta -n ${name} -o ${name}.db
     """
 }
 
-process setupNCBIcogs {
-    container "${params.container__anvio}"
-    label "cpu_high"
-    
-    output:
-    file "COGS_DIR.tar" into anvio_cogs_tar
+if ( "${params.cogs_tar}" != "false" ){
 
-    """#!/bin/bash
+    anvio_cogs_tar = Channel.of(file("${params.cogs_tar}"))
+
+} else {
+
+    process setupNCBIcogs {
+        container "${params.container__anvio}"
+        label "cpu_high"
+        
+        output:
+        file "COGS_DIR.tar" into anvio_cogs_tar
+
+        """#!/bin/bash
 set -e
 
 anvi-setup-ncbi-cogs --num-threads ${task.cpus} --cog-data-dir COGS_DIR --just-do-it --reset
 tar cvf COGS_DIR.tar COGS_DIR
-    """
+        """
+    }
+
 }
+
 
 process annotateGenes {
     container "${params.container__anvio}"

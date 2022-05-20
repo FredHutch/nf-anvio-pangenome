@@ -1,0 +1,19 @@
+{
+    "$schema": "https://raw.githubusercontent.com/FredHutch/bash-workbench/main/docs/schema.json",
+    "name": "Download COGs",
+    "description": "Download COG database for anvi'o pan-genome analysis",
+    "args": {
+        "max_retries": {
+            "help": "The number of times that jobs will be retried before the entire workflow is brought to a halt",
+            "wb_type": "integer",
+            "default": 5,
+            "wb_env": "MAX_RETRIES"
+        },
+        "nxf_profile": {
+            "help": "Profile used for resource allocation (standard or testing)",
+            "wb_env": "PROFILE",
+            "wb_type": "string",
+            "default": "standard"
+        }
+    }
+}
