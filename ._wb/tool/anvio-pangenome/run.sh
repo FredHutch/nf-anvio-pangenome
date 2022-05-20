@@ -15,6 +15,8 @@ nextflow \
     --output_folder "${PWD}" \
     -params-file ._wb/tool/params.json \
     -profile "${PROFILE}" \
+    -process.errorStrategy "retry" \
+    -process.maxRetries ${MAX_RETRIES} \
     -resume
 
 # If temporary files were not placed in a separate location
