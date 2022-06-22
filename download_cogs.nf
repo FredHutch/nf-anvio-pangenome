@@ -1,7 +1,7 @@
 process setupNCBIcogs {
     container "${params.container__anvio}"
     label "cpu_high"
-    publishDir "${params.output_folder}"
+    publishDir "${params.output_folder}", mode: 'copy', overwrite: true
     
     output:
     file "COGS_DIR.tar"
