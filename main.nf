@@ -65,7 +65,7 @@ anvi-gen-contigs-database -f \$fasta.clean.fasta -n ${name} -o ${name}.db
 
 if ( "${params.cogs_tar}" != "false" ){
 
-    anvio_cogs_tar = Channel.of(file("${params.cogs_tar}"))
+    anvio_cogs_tar = file("${params.cogs_tar}")
 
 } else {
 
