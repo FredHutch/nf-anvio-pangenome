@@ -313,6 +313,8 @@ if ( params.category_name ){
 
     set -e
         
+    TMP=\$PWD/tmp \
+    TMPDIR=\$PWD/tmp \
     anvi-compute-genome-similarity \
         --external-genomes ${externalGenomes} \
         --min-alignment-fraction ${min_alignment_fraction} \
