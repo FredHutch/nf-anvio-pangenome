@@ -312,6 +312,8 @@ if ( params.category_name ){
     #!/bin/bash
 
     set -e
+    
+    mkdir tmp
         
     TMP=\$PWD/tmp \
     TMPDIR=\$PWD/tmp \
