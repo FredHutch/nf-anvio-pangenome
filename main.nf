@@ -65,7 +65,7 @@ anvi-gen-contigs-database -f \$fasta.clean.fasta -n ${name} -o ${name}.db
 
 if ( "${params.cogs_tar}" != "false" ){
 
-    anvio_cogs_tar = Channel.of(file("${params.cogs_tar}"))
+    anvio_cogs_tar = file("${params.cogs_tar}", checkIfExists: true)
 
 } else {
 
@@ -312,7 +312,11 @@ if ( params.category_name ){
     #!/bin/bash
 
     set -e
+    
+    mkdir tmp
         
+    TMP=\$PWD/tmp \
+    TMPDIR=\$PWD/tmp \
     anvi-compute-genome-similarity \
         --external-genomes ${externalGenomes} \
         --min-alignment-fraction ${min_alignment_fraction} \
