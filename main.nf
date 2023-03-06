@@ -93,7 +93,7 @@ process annotateGenes {
     
     input:
     set name, file(db) from genomeDB_ch
-    file anvio_cogs_tar
+    each file(anvio_cogs_tar)
     
     output:
     file "${db}" into annotatedDB
