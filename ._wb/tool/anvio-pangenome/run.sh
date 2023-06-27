@@ -9,6 +9,7 @@ echo
 
 # Run the workflow
 echo Starting workflow
+NXF_VER=$NXF_VER \
 nextflow \
     run \
     "${TOOL_REPO}" \
