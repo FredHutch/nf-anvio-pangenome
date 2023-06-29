@@ -69,12 +69,6 @@
             "wb_type": "file",
             "default": "false"
         },
-        "nxf_ver": {
-            "help": "Nextflow Version",
-            "wb_env": "NXF_VER",
-            "wb_type": "string",
-            "default": "22.10.0"
-        },
         "nxf_profile": {
             "help": "Profile used for resource allocation (standard or testing)",
             "wb_env": "PROFILE",

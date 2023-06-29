@@ -1,14 +1,17 @@
 #!/usr/bin/env nextflow
 
+// Using DSL-2
+nextflow.enable.dsl=2
+
 process parseSampleSheet {
     container "quay.io/fhcrc-microbiome/python-pandas:v0.24.2"
     label "io_limited"
     
     input:
-    file sample_sheet_csv from file(params.sample_sheet)
+    path sample_sheet_csv
     
     output:
-    file "${sample_sheet_csv}" into sample_sheet_ch, sample_sheet_to_parse
+    path "${sample_sheet_csv}"
 
     """#!/usr/bin/env python3
 import pandas as pd
@@ -36,10 +39,10 @@ process makeGenomeDB {
     label "mem_medium"
     
     input:
-    set name, file(fasta) from sample_sheet_ch.splitCsv(header:true, sep:"\t").map { row -> tuple(row.name, file(row.genome)) }
+    tuple val(name), path(fasta)
     
     output:
-    set name, file("${name}.db") into genomeDB_ch, nameDB_ch, aniDB_ch
+    tuple val(name), path("${name}.db")
 
     """#!/bin/bash
 set -e
@@ -63,27 +66,19 @@ anvi-gen-contigs-database -f \$fasta.clean.fasta -n ${name} -o ${name}.db
     """
 }
 
-if ( "${params.cogs_tar}" != "false" ){
+process setupNCBIcogs {
+    container "${params.container__anvio}"
+    label "cpu_high"
+    
+    output:
+    path "COGS_DIR.tar"
 
-    anvio_cogs_tar = file("${params.cogs_tar}", checkIfExists: true)
-
-} else {
-
-    process setupNCBIcogs {
-        container "${params.container__anvio}"
-        label "cpu_high"
-        
-        output:
-        file "COGS_DIR.tar" into anvio_cogs_tar
-
-        """#!/bin/bash
+    """#!/bin/bash
 set -e
 
 anvi-setup-ncbi-cogs --num-threads ${task.cpus} --cog-data-dir COGS_DIR --just-do-it --reset
 tar cvf COGS_DIR.tar COGS_DIR
-        """
-    }
-
+    """
 }
 
 
@@ -92,11 +87,11 @@ process annotateGenes {
     label "cpu_high"
     
     input:
-    set name, file(db) from genomeDB_ch
-    each file(anvio_cogs_tar)
+    tuple val(name), path(db)
+    each path(anvio_cogs_tar)
     
     output:
-    file "${db}" into annotatedDB
+    path "${db}"
 
     """#!/bin/bash
 set -e
@@ -111,10 +106,10 @@ process linkGeneName {
     label "mem_medium"
     
     input:
-    set name, file(db) from nameDB_ch
+    tuple val(name), path(db)
     
     output:
-    file "${db}.txt" into layer_txt_for_combineGenomes
+    path "${db}.txt"
 
     """#!/bin/bash
 set -e
@@ -130,12 +125,12 @@ process combineGenomes {
     publishDir "${params.output_folder}", mode: "copy", overwrite: true
     
     input:
-    file db_list from annotatedDB.collect()
-    file txt_list from layer_txt_for_combineGenomes.collect()
+    path db_list
+    path txt_list
     
     output:
-    file "${params.output_name}-GENOMES.db" into combinedDB
-    file "external-genomes.txt" into external_genomes_for_ani
+    path "${params.output_name}-GENOMES.db"
+    path "external-genomes.txt" 
 
     """#!/bin/bash
 set -e
@@ -153,30 +148,24 @@ process panGenomeAnalysis {
     label "cpu_high"
     
     input:
-    file combinedDB
-    val output_name from params.output_name
-    val min_occurrence from params.min_occurrence
-    val minbit from params.minbit
-    val distance from params.distance
-    val linkage from params.linkage
-    val mcl_inflation from params.mcl_inflation
+    path combinedDB
     
     output:
-    file "${params.output_name}-PAN.db" into panGenome_for_addMetadata, panGenome_for_getSeqs
+    path "${params.output_name}-PAN.db"
 
     """#!/bin/bash
 set -e
 
 anvi-pan-genome -g ${combinedDB} \
-                --project-name ${output_name} \
+                --project-name ${params.output_name} \
                 --output-dir ./ \
                 --num-threads ${task.cpus} \
                 --use-ncbi-blast \
-                --min-occurrence ${min_occurrence} \
-                --minbit ${minbit} \
-                --distance ${distance} \
-                --linkage ${linkage} \
-                --mcl-inflation ${mcl_inflation}
+                --min-occurrence ${params.min_occurrence} \
+                --minbit ${params.minbit} \
+                --distance ${params.distance} \
+                --linkage ${params.linkage} \
+                --mcl-inflation ${params.mcl_inflation}
     """
 }
 
@@ -186,30 +175,26 @@ process getSequencesForGCs {
     publishDir "${params.output_folder}", mode: "copy", overwrite: true
     
     input:
-    file panGenome from panGenome_for_getSeqs
-    file combinedDB
-    val output_name from params.output_name
+    path panGenome
+    path combinedDB
     
     output:
-    file "${output_name}.gene_clusters.fastp"
-    file "${output_name}.gene_clusters.fasta"
+    path "${params.output_name}.gene_clusters.fastp"
+    path "${params.output_name}.gene_clusters.fasta"
 
     """#!/bin/bash
-set -e
-
-
 set -e
     
 anvi-get-sequences-for-gene-clusters \
     -p ${panGenome} \
     -g ${combinedDB} \
-    -o ${output_name}.gene_clusters.fastp \
+    -o ${params.output_name}.gene_clusters.fastp \
     --just-do-it
 
 anvi-get-sequences-for-gene-clusters \
     -p ${panGenome} \
     -g ${combinedDB} \
-    -o ${output_name}.gene_clusters.fasta \
+    -o ${params.output_name}.gene_clusters.fasta \
     --report-DNA-sequences \
     --just-do-it
     """
@@ -221,12 +206,12 @@ process addMetadata {
     publishDir "${params.output_folder}", mode: "copy", overwrite: true
     
     input:
-    file panGenome from panGenome_for_addMetadata
-    file combinedDB
-    file sample_sheet from sample_sheet_to_parse
+    path panGenome
+    path combinedDB
+    path sample_sheet
     
     output:
-    file "${panGenome}" into panGenome_for_enrichFunctions, panGenome_for_ani
+    path "${panGenome}"
 
     """#!/bin/bash
 set -e
@@ -251,79 +236,151 @@ fi
     """
 }
 
-if ( params.category_name ){
-    process enrichFunctions{
-        container "${params.container__anvio}"
-        label "mem_medium"
-        publishDir "${params.output_folder}", mode: "copy", overwrite: true
-        
-        input:
-        file panGenome from panGenome_for_enrichFunctions
-        file combinedDB
-        val output_name from params.output_name
-        val category_name from Channel.of(params.category_name.split(","))
-        
-        output:
-        file "${output_name}-enriched-functions-${category_name}.txt"
-        file "${output_name}-functions-occurrence.txt"
-
-        script:
-
-        if (params.gene_enrichment == false)
-            """#!/bin/bash
-            anvi-compute-functional-enrichment -p ${panGenome} \
-                                                -g ${combinedDB} \
-                                                --category-variable ${category_name} \
-                                                --annotation-source COG20_FUNCTION \
-                                                -o "${output_name}-enriched-functions-${category_name}.txt" \
-                                                --functional-occurrence-table-output "${output_name}-functions-occurrence.txt"
-        """
-
-        else
-            """#!/bin/bash
-            anvi-compute-functional-enrichment -p ${panGenome} \
-                                                -g ${combinedDB} \
-                                                --category-variable ${category_name} \
-                                                --annotation-source IDENTITY \
-                                                --include-gc-identity-as-function \
-                                                -o "${output_name}-enriched-functions-${category_name}.txt" \
-                                                --functional-occurrence-table-output "${output_name}-functions-occurrence.txt"
-            """
-    }
-}
-    process computeANI {
-        container "${params.container__anvio}"
-        label "cpu_high"
-        publishDir "${params.output_folder}", mode: "copy", overwrite: true
-        
-        input:
-        file panGenome from panGenome_for_ani
-        val output_name from params.output_name
-        val min_alignment_fraction from params.min_alignment_fraction
-        file combinedDB
-        file genome_db_list from aniDB_ch.collect()
-        file externalGenomes from external_genomes_for_ani
-        
-        output:
-        file "${panGenome}"
-        file "ANI/*"
-
-        """
-    #!/bin/bash
-
-    set -e
+process enrichFunctions{
+    container "${params.container__anvio}"
+    label "mem_medium"
+    publishDir "${params.output_folder}", mode: "copy", overwrite: true
     
-    mkdir tmp
-        
-    TMP=\$PWD/tmp \
-    TMPDIR=\$PWD/tmp \
-    anvi-compute-genome-similarity \
-        --external-genomes ${externalGenomes} \
-        --min-alignment-fraction ${min_alignment_fraction} \
-        --output-dir ANI \
-        --num-threads ${task.cpus} \
-        --pan-db ${panGenome} \
-        --program ${params.ani_program} \
-        -T ${task.cpus}
+    input:
+    path panGenome
+    path combinedDB
+    val category_name
+    
+    output:
+    path "${params.output_name}-enriched-functions-${category_name}.txt"
+    path "${params.output_name}-functions-occurrence.txt"
+
+    script:
+
+    if (params.gene_enrichment == false)
+        """#!/bin/bash
+        anvi-compute-functional-enrichment -p ${panGenome} \
+                                            -g ${combinedDB} \
+                                            --category-variable ${category_name} \
+                                            --annotation-source COG20_FUNCTION \
+                                            -o "${params.output_name}-enriched-functions-${category_name}.txt" \
+                                            --functional-occurrence-table-output "${output_name}-functions-occurrence.txt"
+    """
+
+    else
+        """#!/bin/bash
+        anvi-compute-functional-enrichment -p ${panGenome} \
+                                            -g ${combinedDB} \
+                                            --category-variable ${category_name} \
+                                            --annotation-source IDENTITY \
+                                            --include-gc-identity-as-function \
+                                            -o "${params.output_name}-enriched-functions-${category_name}.txt" \
+                                            --functional-occurrence-table-output "${output_name}-functions-occurrence.txt"
         """
+}
+
+process computeANI {
+    container "${params.container__anvio}"
+    label "cpu_high"
+    publishDir "${params.output_folder}", mode: "copy", overwrite: true
+    
+    input:
+    path panGenome
+    path combinedDB
+    path genome_db_list
+    path externalGenomes
+    
+    output:
+    path "${panGenome}"
+    path "ANI/*"
+
+    """
+#!/bin/bash
+
+set -e
+
+mkdir tmp
+    
+TMP=\$PWD/tmp \
+TMPDIR=\$PWD/tmp \
+anvi-compute-genome-similarity \
+    --external-genomes ${externalGenomes} \
+    --min-alignment-fraction ${params.min_alignment_fraction} \
+    --output-dir ANI \
+    --num-threads ${task.cpus} \
+    --pan-db ${panGenome} \
+    --program ${params.ani_program} \
+    -T ${task.cpus}
+    """
+}
+
+workflow {
+
+    parseSampleSheet(
+        file(params.sample_sheet, checkIfExists: true)
+    )
+
+    makeGenomeDB(
+         parseSampleSheet
+            .out
+            .splitCsv(
+                header:true,
+                sep:"\t"
+            ).map {
+                row -> [
+                    row.name,
+                    file(row.genome, checkIfExists: true)
+                ]
+            }
+    )
+
+    if ( "${params.cogs_tar}" != "false" ){
+
+        anvio_cogs_tar = file("${params.cogs_tar}", checkIfExists: true)
+
+    } else {
+        
+        setupNCBIcogs()
+        anvio_cogs_tar = setupNCBIcogs.out
+
     }
+
+    annotateGenes(
+        makeGenomeDB.out,
+        anvio_cogs_tar
+    )
+
+    linkGeneName(
+        makeGenomeDB.out
+    )
+
+    combineGenomes(
+        annotateGenes.out.toSortedList(),
+        linkGeneName.out.toSortedList()
+    )
+
+    panGenomeAnalysis(
+        combineGenomes.out[0]
+    )
+
+    getSequencesForGCs(
+        panGenomeAnalysis.out,
+        combineGenomes.out[0]
+    )
+
+    addMetadata(
+        panGenomeAnalysis.out,
+        combineGenomes.out[0],
+        parseSampleSheet.out
+    )
+
+    if ( params.category_name ){
+        enrichFunctions(
+            addMetadata.out,
+            combineGenomes.out[0],
+            Channel.of(params.category_name.split(","))
+        )
+    }
+
+    computeANI(
+        addMetadata.out,
+        combineGenomes.out[0],
+        makeGenomeDB.out.toSortedList(),
+        combineGenomes.out[0]
+    )
+}
