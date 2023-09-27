@@ -18,3 +18,7 @@ anvi-setup-ncbi-cogs --num-threads ${task.cpus} --cog-data-dir COGS_DIR --just-d
 tar cvf COGS_DIR.tar COGS_DIR
     """
 }
+
+workflow {
+    setupNCBIcogs()
+}
