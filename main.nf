@@ -380,7 +380,10 @@ workflow {
     computeANI(
         addMetadata.out,
         combineGenomes.out[0],
-        makeGenomeDB.out.toSortedList(),
+        makeGenomeDB
+            .out
+            .map { name, genome -> genome }
+            .toSortedList(),
         combineGenomes.out[0]
     )
 }
