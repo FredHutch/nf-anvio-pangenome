@@ -281,8 +281,6 @@ process computeANI {
     
     input:
     path panGenome
-    path combinedDB
-    path genome_db_list
     path externalGenomes
     
     output:
@@ -379,11 +377,6 @@ workflow {
 
     computeANI(
         addMetadata.out,
-        combineGenomes.out[0],
-        makeGenomeDB
-            .out
-            .map { name, genome -> genome }
-            .toSortedList(),
         combineGenomes.out[0]
     )
 }
