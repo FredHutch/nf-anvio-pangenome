@@ -259,7 +259,7 @@ process enrichFunctions{
                                             --category-variable ${category_name} \
                                             --annotation-source COG20_FUNCTION \
                                             -o "${params.output_name}-enriched-functions-${category_name}.txt" \
-                                            --functional-occurrence-table-output "${output_name}-functions-occurrence.txt"
+                                            --functional-occurrence-table-output "${params.output_name}-functions-occurrence.txt"
     """
 
     else
@@ -270,7 +270,7 @@ process enrichFunctions{
                                             --annotation-source IDENTITY \
                                             --include-gc-identity-as-function \
                                             -o "${params.output_name}-enriched-functions-${category_name}.txt" \
-                                            --functional-occurrence-table-output "${output_name}-functions-occurrence.txt"
+                                            --functional-occurrence-table-output "${params.output_name}-functions-occurrence.txt"
         """
 }
 
